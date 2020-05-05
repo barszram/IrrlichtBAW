@@ -224,8 +224,10 @@ set(IRRLICHT_SRCS_SERVER
 )
 
 set(COMMON_INCLUDE_DIRS
+	${Vulkan_INCLUDE_DIR}
 	${THIRD_PARTY_SOURCE_DIR}/convertutf
 	${THIRD_PARTY_SOURCE_DIR}/utfcpp/source
+	${THIRD_PARTY_SOURCE_DIR}/volk
 	$<TARGET_PROPERTY:zlibstatic,BINARY_DIR> #for dynamically generated zconf.h
 	$<TARGET_PROPERTY:png_static,BINARY_DIR> #for dynamically generated pnglibconf.h
 	$<TARGET_PROPERTY:jpeg,BINARY_DIR> #for dynamically generated jconfig.h
@@ -233,6 +235,13 @@ set(COMMON_INCLUDE_DIRS
 
 irr_adjust_flags() # macro defined in root CMakeLists
 irr_adjust_definitions() # macro defined in root CMakeLists
+
+macro(irr_target_link_SDL2 _trgt)	
+	target_link_libraries(${_trgt} PUBLIC
+		SDL2-static
+	)
+	target_include_directories(${_trgt} PUBLIC ${THIRD_PARTY_SOURCE_DIR}/SDL2)
+endmacro()
 
 macro(irr_target_link_zlib _trgt)
 	add_dependencies(${_trgt} zlibstatic)
@@ -305,6 +314,7 @@ irr_target_link_shaderc(Irrlicht)
 irr_target_link_libjpeg(Irrlicht)
 irr_target_link_libpng(Irrlicht)
 irr_target_include_parallel_hashmap(Irrlicht)
+irr_target_link_SDL2(Irrlicht)
 
 target_link_libraries(Irrlicht INTERFACE ${OPENGL_gl_LIBRARY})
 if (UNIX)
@@ -389,6 +399,7 @@ irr_target_link_openssl(IrrlichtServer)
 irr_target_link_shaderc(IrrlichtServer)
 irr_target_link_libjpeg(IrrlichtServer)
 irr_target_link_libpng(IrrlichtServer)
+irr_target_link_SDL2(IrrlichtServer)
 irr_target_include_parallel_hashmap(IrrlichtServer)
 
 target_include_directories(IrrlichtServer PUBLIC 
